@@ -1,22 +1,55 @@
-<!-- templates/predict_rating.html -->
+<!-- predict_rating.html -->
 
-{% load static %}
+<form action="{% url 'predict_rating' %}" method="post">
+  {% csrf_token %}
+  <textarea name="review_text" rows="4" cols="50"></textarea>
+  <button type="submit">Submit Review</button>
+</form>
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Movie Review Classifier</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-</head>
-<body>
-    <h1>Predict Movie Rating</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Predict Rating">
-    </form>
-    {% if predicted_rating %}
-        <p>We think the rating for this review would be {{ predicted_rating }}</p>
-    {% endif %}
-</body>
-</html>
+{% if predicted_rating %}
+  <p>Predicted Rating: {{ predicted_rating }}</p>
+{% endif %}
+
+<div id="prediction-result"></div>
+
+<script>
+  document.querySelector('form').addEventListener('submit', (event) => {
+    event.preventDefault();
+    const form = event.target;
+    const reviewText = form.querySelector('[name="review_text"]').value;
+    const resultElement = document.getElementById('prediction-result');
+
+    // Make the API request
+    fetch('{% url "predict_rating" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ 'review_text': reviewText })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      // Check if the response is empty or not JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Invalid response format');
+      }
+      return response.json();
+    })
+    .then(data => {
+      const predictedRating = data.predicted_rating;
+      if (typeof predictedRating === 'number') {
+        resultElement.innerHTML = `Predicted Rating: ${predictedRating}`;
+      } else {
+        throw new Error('Invalid predicted rating format');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      resultElement.innerHTML = 'Prediction failed. Please try again later.';
+    });
+  });
+</script>
