@@ -1,0 +1,22 @@
+<!-- templates/predict_rating.html -->
+
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movie Review Classifier</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Predict Movie Rating</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Predict Rating">
+    </form>
+    {% if predicted_rating %}
+        <p>We think the rating for this review would be {{ predicted_rating }}</p>
+    {% endif %}
+</body>
+</html>
