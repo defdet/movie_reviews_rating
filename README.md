@@ -1,1 +1,4 @@
-# movie_reviews_rating
+Весы используемой модели: https://huggingface.co/Defetya/deberta-tuned-reviews/tree/main
+Весы изначальной модели: https://huggingface.co/microsoft/deberta-base
+Jupiter ноутбук в котором обучалась модель прикреплен, пояснения к коду в комментариях.
+Для тестирования сервиса Вы можете либо клонировать репозиторий и запустить сайт локально командой python manage.py runserver, либо перейти по ссылке, указанной в письме (необходимо дополнительно подтвердить переход)  
